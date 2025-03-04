@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  base:
+    build:
+      context: .
+      dockerfile: Dockerfile.base
+    image: random-button-base:latest
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      - base
+    volumes:
+      - backend_data:/data
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_PATH=/data/repository.db
+      - HOST=0.0.0.0
+      - PORT=8000
+      - DEBUG=False
+      - ALLOWED_ORIGINS=http://localhost:8080,http://localhost:8550
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - base
+      - backend
+    ports:
+      - "8080:8550"
+    environment:
+      - PORT=8550
+      - BACKEND_URL=http://backend:8000
+      - CHUCK_NORRIS_API_URL=https://api.chucknorris.io/jokes/random
+
+volumes:
+  backend_data: 

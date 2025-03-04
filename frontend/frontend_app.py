@@ -3,6 +3,15 @@
 import flet as ft
 import random
 import requests
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+# Configuration
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
+CHUCK_NORRIS_API_URL = os.getenv("CHUCK_NORRIS_API_URL", "https://api.chucknorris.io/jokes/random")
 
 def main(page: ft.Page):
     """Initialize and configure the main application page."""
@@ -21,7 +30,7 @@ def main(page: ft.Page):
     def fetch_quote():
         """Fetch a random quote from the backend API."""
         try:
-            response = requests.get("http://localhost:8000/random/quote", timeout=10)
+            response = requests.get(f"{BACKEND_URL}/random/quote", timeout=10)
             data = response.json()
             quote = data.get("content", "No quote available")
             type = data.get("type", "Unknown")
@@ -32,7 +41,7 @@ def main(page: ft.Page):
     def fetch_joke():
         """Fetch a random joke from the backend API."""
         try:
-            response = requests.get("http://localhost:8000/random/joke", timeout=10)
+            response = requests.get(f"{BACKEND_URL}/random/joke", timeout=10)
             data = response.json()
             quote = data.get("content", "No quote available")
             type = data.get("type", "Unknown")
@@ -45,7 +54,7 @@ def main(page: ft.Page):
         try:
             # Elegir aleatoriamente entre quote y joke
             content_type = random.choice(["quote", "joke"])
-            response = requests.get(f"http://localhost:8000/random/{content_type}", timeout=10)
+            response = requests.get(f"{BACKEND_URL}/random/{content_type}", timeout=10)
             data = response.json()
             quote = data.get("content", "No quote available")
             type = data.get("type", "Unknown")
@@ -105,13 +114,13 @@ def main(page: ft.Page):
         try:
             # Obtener un chiste de Chuck Norris de la API
             async with httpx.AsyncClient() as client:
-                response = await client.get("https://api.chucknorris.io/jokes/random")
+                response = await client.get(CHUCK_NORRIS_API_URL)
                 if response.status_code == 200:
                     chuck_joke = response.json().get("value", "No joke available")
                     
                     # Enviar el chiste a nuestro backend
                     backend_response = await client.post(
-                        "http://localhost:8000/add/content",
+                        f"{BACKEND_URL}/add/content",
                         json={
                             "content_type": "joke",
                             "content": chuck_joke
@@ -223,5 +232,10 @@ def main(page: ft.Page):
         )
     )
 
-ft.app(target=main, view=ft.WEB_BROWSER)
+if __name__ == "__main__":
+    ft.app(
+        target=main,
+        view=ft.WEB_BROWSER,
+        port=int(os.getenv("PORT", "8550"))
+    )
 
