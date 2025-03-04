@@ -1,9 +1,11 @@
+"""Frontend application for the Random Content Generator using Flet."""
+
 import flet as ft
 import random
 import requests
-from datetime import datetime
 
 def main(page: ft.Page):
+    """Initialize and configure the main application page."""
     page.title = "Random Quote Generator"
     page.window.maximized = True
     page.theme_mode = ft.ThemeMode.DARK
@@ -17,60 +19,60 @@ def main(page: ft.Page):
     )
 
     def fetch_quote():
+        """Fetch a random quote from the backend API."""
         try:
-            response = requests.get("http://localhost:8000/random/quote")
+            response = requests.get("http://localhost:8000/random/quote", timeout=10)
             data = response.json()
             quote = data.get("content", "No quote available")
             type = data.get("type", "Unknown")
-            timestamp = datetime.now().strftime("%H:%M:%S")
-            return quote, type, timestamp
+            return quote, type
         except Exception as error:
             raise error
     
     def fetch_joke():
+        """Fetch a random joke from the backend API."""
         try:
-            response = requests.get("http://localhost:8000/random/joke")
+            response = requests.get("http://localhost:8000/random/joke", timeout=10)
             data = response.json()
             quote = data.get("content", "No quote available")
             type = data.get("type", "Unknown")
-            timestamp = datetime.now().strftime("%H:%M:%S")
-            return quote, type, timestamp
+            return quote, type
         except Exception as error:
             raise error
     
     def fetch_random():
+        """Fetch random content (quote or joke) from the backend API."""
         try:
             # Elegir aleatoriamente entre quote y joke
             content_type = random.choice(["quote", "joke"])
-            response = requests.get(f"http://localhost:8000/random/{content_type}")
+            response = requests.get(f"http://localhost:8000/random/{content_type}", timeout=10)
             data = response.json()
             quote = data.get("content", "No quote available")
             type = data.get("type", "Unknown")
-            timestamp = datetime.now().strftime("%H:%M:%S")
-            return quote, type, timestamp
+            return quote, type
         except Exception as error:
             raise error
     
     def get_random_quote(e):
+        """Handle button click to fetch and display random content."""
         try:
             # Obtener el identificador del botón
             button_id = e.control.data
             
             # Obtener contenido usando la función correspondiente según el botón
             if button_id == "quote":
-                quote, type, timestamp = fetch_quote()
+                quote, type = fetch_quote()
             elif button_id == "joke":
-                quote, type, timestamp = fetch_joke()
+                quote, type = fetch_joke()
             else:  # random
-                quote, type, timestamp = fetch_random()
+                quote, type = fetch_random()
 
             # Create a card for the new quote
             quote_card = ft.Card(
                 content=ft.Container(
                     content=ft.Column([
                         ft.Text(f'"{quote}"', size=16, weight=ft.FontWeight.BOLD),
-                        ft.Text(f"- {type}", italic=True),
-                        ft.Text(f"Retrieved at: {timestamp}", size=12, color=ft.colors.GREY_400)
+                        ft.Text(f" ({type})", italic=True)
                     ]),
                     padding=15,
                     border_radius=10
@@ -96,10 +98,62 @@ def main(page: ft.Page):
             quotes_container.controls.insert(0, error_card)
             page.update()
     
+    async def add_content(e):
+        """Handle button click to fetch and add a Chuck Norris joke."""
+        import time # Import time to use sleep - here por the lazy loading
+        import httpx # Usamos httpx para solicitudes asíncronas
+        try:
+            # Obtener un chiste de Chuck Norris de la API
+            async with httpx.AsyncClient() as client:
+                response = await client.get("https://api.chucknorris.io/jokes/random")
+                if response.status_code == 200:
+                    chuck_joke = response.json().get("value", "No joke available")
+                    
+                    # Enviar el chiste a nuestro backend
+                    backend_response = await client.post(
+                        "http://localhost:8000/add/content",
+                        json={
+                            "content_type": "joke",
+                            "content": chuck_joke
+                        },
+                    )
+
+                    if backend_response.status_code == 200:        
+                         # Create a card for the new quote
+                        quote_card = ft.Card(
+                            content=ft.Container(
+                                content=ft.Column([
+                                    ft.Text(f'"{chuck_joke}"', size=16, weight=ft.FontWeight.BOLD),
+                                    ft.Text(f" ( New Joke Added )", italic=True)
+                                ]),
+                                padding=15,
+                                border_radius=10
+                            ),
+                            elevation=5,
+                            margin=ft.margin.only(bottom=10)
+                        )
+                        # Add the new quote at the beginning of the list
+                        quotes_container.controls.insert(0, quote_card)
+                        page.update()   
+                else:
+                    raise Exception("Failed to get Chuck Norris joke")
+        except Exception as error:
+            error_card = ft.Card(
+                content=ft.Container(
+                    content=ft.Text(f"Error: {str(error)}", color=ft.colors.RED_500),
+                    padding=15
+                ),  
+                elevation=5,
+                margin=ft.margin.only(bottom=10)
+            )
+            quotes_container.controls.insert(0, error_card)
+            page.update()
+
+
     # Create the buttons to get content
     fetch_quote_button = ft.ElevatedButton(
         "Get Quote",
-        icon=ft.icons.TAG_FACES_SHARP,
+        icon=ft.icons.LIGHTBULB_ROUNDED,
         on_click=get_random_quote,
         data="quote",  # Identificador para el botón de quotes
         style=ft.ButtonStyle(
@@ -111,7 +165,7 @@ def main(page: ft.Page):
     
     fetch_joke_button = ft.ElevatedButton(
         "Get Joke",
-        icon=ft.icons.TAG_FACES_SHARP,
+        icon=ft.icons.TAG_FACES_OUTLINED,
         on_click=get_random_quote,
         data="joke",  # Identificador para el botón de jokes
         style=ft.ButtonStyle(
@@ -133,9 +187,20 @@ def main(page: ft.Page):
         width=200
     )
     
+    add_content_button = ft.ElevatedButton(
+        "Add Content",
+        icon=ft.icons.ADD_CIRCLE_OUTLINE,
+        on_click=add_content,
+        style=ft.ButtonStyle(
+            shape=ft.RoundedRectangleBorder(radius=10),
+            padding=ft.padding.all(15),
+        ),
+        width=200
+    )
+    
     # Button row
     button_row = ft.Row(
-        [fetch_quote_button, fetch_joke_button, fetch_random_button],
+        [fetch_quote_button, fetch_joke_button, fetch_random_button, add_content_button],
         alignment=ft.MainAxisAlignment.CENTER,
         spacing=20
     )
@@ -158,5 +223,5 @@ def main(page: ft.Page):
         )
     )
 
-ft.app(main)
+ft.app(target=main, view=ft.WEB_BROWSER)
 
