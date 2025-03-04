@@ -8,7 +8,7 @@ COPY . .
 RUN mkdir -p /data
 
 # Set environment variables
-ENV DB_PATH=/data/repository.db
+ENV DB_PATH=/repository.db
 ENV HOST=0.0.0.0
 ENV PORT=8000
 ENV DEBUG=False

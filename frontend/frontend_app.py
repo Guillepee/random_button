@@ -16,7 +16,6 @@ CHUCK_NORRIS_API_URL = os.getenv("CHUCK_NORRIS_API_URL", "https://api.chucknorri
 def main(page: ft.Page):
     """Initialize and configure the main application page."""
     page.title = "Random Quote Generator"
-    page.window.maximized = True
     page.theme_mode = ft.ThemeMode.DARK
     
     # Container to hold all quotes
@@ -236,6 +235,6 @@ if __name__ == "__main__":
     ft.app(
         target=main,
         view=ft.WEB_BROWSER,
-        port=int(os.getenv("PORT", "8550"))
+        port=int(os.getenv("PORT", "8080"))
     )
 
