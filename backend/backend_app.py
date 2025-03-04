@@ -19,7 +19,6 @@ class RandomType(str, Enum):
 # Funcion que se ejecuta cuando se accede a la url raiz/joke
 @app.get("/random/{type}")
 async def get_joke(type: RandomType): # Type es una instancia de la clase RandomType
-
     if type == RandomType.joke:
         return repository.get_random_joke()
     elif type == RandomType.quote:
