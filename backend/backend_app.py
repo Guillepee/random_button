@@ -25,7 +25,7 @@ app.add_middleware(
 )
 
 # Initialize repository with database path from environment
-repository = DatabaseRepository(os.getenv("DB_PATH", "./repository.db"))
+repository = DatabaseRepository(os.getenv("DB_PATH", "/repository.db"))
 
 class RandomType(str, Enum):
     """Enumeration class for different types of random content.

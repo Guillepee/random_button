@@ -19,10 +19,9 @@ Una aplicación sencilla y directa que genera citas y chistes aleatorios con sol
 
 ### Requisitos previos
 
-- Python 3.7+
-- pip (gestor de paquetes de Python)
+- Docker
 
-### Instalación
+### Instalación y Ejecución con Docker
 
 1. Clona este repositorio:
    ```bash
@@ -30,70 +29,42 @@ Una aplicación sencilla y directa que genera citas y chistes aleatorios con sol
    cd random_button
    ```
 
-2. Instala las dependencias:
+2. Construye la imagen de Docker:
    ```bash
-   pip install -r requeriments
+   docker buildx build -t random-button-app:latest .
    ```
+
+3. Ejecuta el contenedor:
+   ```bash
+   docker run -p 8080:8080 -p 8000:8000 --rm --name random-button-app random-button-app:latest
+   ```
+
+La aplicación estará disponible en:
+- Frontend: `http://localhost:8080`
+- Backend API: `http://localhost:8000`
 
 ## 🏗️ Estructura del proyecto
 
 ```
 random_button/
 ├── backend/                # Servidor API REST
-│   ├── data/               # Datos de frases y chistes
-│   │   └── content_data.json
 │   ├── backend_app.py      # Punto de entrada del backend
-│   ├── class_repository.py # Repositorio de datos
-│   ├── config.py           # Configuración del backend
-│   └── README.md           # Documentación específica del backend
-├── frontend/               # Aplicación cliente
-│   ├── frontend_app.py     # Aplicación Flet
-│   ├── example.js          # Ejemplo de cliente JavaScript
-│   └── index.html          # Ejemplo de cliente HTML
-├── venv/                   # Entorno virtual (ignorado en git)
-├── requeriments            # Dependencias del proyecto
-└── README.md               # Este archivo
+│   └── database_repository.py # Repositorio de base de datos SQLite
+├── frontend/              # Aplicación cliente
+│   └── frontend_app.py    # Aplicación Flet
+├── Dockerfile            # Configuración de Docker
+├── requirements.txt      # Dependencias del proyecto
+├── .env                 # Variables de entorno (no versionado)
+└── README.md            # Este archivo
 ```
 
 ## 🖥️ Uso
 
-### Ejecutando el backend
+Una vez que el contenedor Docker esté en ejecución, puedes acceder a:
 
-1. Navega al directorio del backend:
-   ```bash
-   cd backend
-   ```
-
-2. Inicia el servidor:
-   ```bash
-   python backend_app.py
-   ```
-
-3. El servidor estará disponible en `http://localhost:8000`
-
-### Ejecutando el frontend
-
-#### Aplicación Flet
-
-1. Navega al directorio del frontend:
-   ```bash
-   cd frontend
-   ```
-
-2. Inicia la aplicación:
-   ```bash
-   python frontend_app.py
-   ```
-
-3. La aplicación se abrirá automáticamente en tu navegador predeterminado
-
-#### Cliente web alternativo
-
-También puedes usar el cliente web HTML/JS incluido:
-
-1. Abre el archivo `frontend/index.html` en tu navegador web
-2. Asegúrate de que el backend esté en ejecución
-3. Haz clic en el botón para obtener contenido aleatorio
+- **Aplicación Frontend**: `http://localhost:8080`
+- **API Backend**: `http://localhost:8000`
+- **Documentación API**: `http://localhost:8000/docs`
 
 ## 📡 API Endpoints
 
@@ -111,33 +82,37 @@ Donde `{type}` puede ser:
 
 ```json
 {
-  "content": "Why don't scientists trust atoms? Because they make up everything!",
-  "id": 42,
-  "author": "Anonymous"
+{
+  "type": "joke",
+  "content": "What is the computer's favorite snack to eat?... Microchips!"
+}
 }
 ```
 
-### Documentación de la API
-
-Una vez que el servidor esté en ejecución, puedes acceder a la documentación interactiva de la API en:
-
-- Swagger UI: `http://localhost:8000/docs`
-- ReDoc: `http://localhost:8000/redoc`
-
 ## 🧩 Arquitectura
 
-El proyecto sigue una arquitectura de microservicios con separación clara entre el backend y el frontend:
+El proyecto sigue una arquitectura de microservicios con:
 
 ### Backend
 
-- **FastAPI**: Framework moderno y de alto rendimiento para construir APIs con Python
-- **Patrón Repositorio**: Abstracción para el acceso a datos
-- **Enumeraciones**: Uso de Enum para tipos de contenido (chistes/frases)
+- **FastAPI**: Framework moderno para APIs
+- **SQLite**: Base de datos ligera para almacenamiento
+- **Docker**: Containerización de la aplicación
+- **Patrón Repositorio**: Para acceso a datos
 
 ### Frontend
 
-- **Flet**: Framework para construir interfaces de usuario con Flutter y Python
-- **Tema oscuro**: Interfaz moderna con modo oscuro
-- **Contenedores desplazables**: Para mostrar múltiples elementos de contenido
+- **Flet**: Framework para UI con Flutter/Python
+- **Tema oscuro**: Interfaz moderna
+- **Contenedores desplazables**: Para mostrar contenido
+- **Integración con Chuck Norris API**: Para obtener chistes adicionales
 
+
+## 📦 Dependencias
+
+- **FastAPI**: Framework moderno para APIs
+- **SQLite**: Base de datos ligera para almacenamiento
+- **Docker**: Containerización de la aplicación
+- **Flet**: Framework para UI con Flutter/Python
+- **Chuck Norris API**: Para obtener chistes adicionales
 
