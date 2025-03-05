@@ -142,3 +142,44 @@ The project includes several Docker-related files:
 - **Flet**: UI Framework with Flutter/Python
 - **Chuck Norris API**: For additional jokes
 
+## 🎯 Design Decisions and Architecture
+
+### General Architecture
+
+The system is divided into two main components:
+
+1. **Backend (FastAPI)**: Provides a RESTful API for content management.
+2. **Frontend (Flet)**: Web user interface that consumes the backend API.
+
+### Data Persistence
+
+SQLite was chosen as the storage system for the following reasons:
+
+- **Simplicity**: No separate server configuration required.
+- **Familiarity**: Provides a standard SQL interface similar to more robust relational databases.
+- **Portability**: The database file can be easily backed up or transferred.
+
+Alternatives considered:
+- **JSON Storage**: Would have required implementing Docker volumes for persistence.
+- **Redis**: Could have been used for in-memory storage with optional persistence.
+
+### Implemented Features
+
+Several options were added to enrich the user experience:
+
+1. **Selective content retrieval**:
+   - Get jokes only
+   - Get quotes only
+   - Get random content (joke or quote)
+
+2. **Content expansion**:
+   - Functionality to add new jokes extracted from an external API (Chuck Norris API)
+   - POST endpoint to allow the addition of new content
+
+### Scalability Considerations
+
+The current architecture allows:
+- Easy migration to a more robust database if data volume grows
+- Clear separation of responsibilities that facilitates maintenance
+- Possibility of horizontally scaling the backend if necessary
+
