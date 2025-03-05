@@ -5,114 +5,136 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.109.2-009688?style=flat-square&logo=fastapi)
 ![Flet](https://img.shields.io/badge/Flet-0.20.0-ff69b4?style=flat-square)
 
-Una aplicación sencilla y directa que genera citas y chistes aleatorios con solo pulsar un botón. Construida con una arquitectura de microservicios que separa el backend (API REST) del frontend.
+A simple application that generates random quotes and jokes with just a button press. Built with a microservices architecture that separates the backend (REST API) from the frontend.
 
-## ✨ Características
+## ✨ Features
 
-- 🔄 Generación aleatoria de citas y chistes 
-- 🌐 API REST con FastAPI para servir el contenido
-- 🎨 Interfaz de usuario minimalista construida con Flet
-- 🏗️ Arquitectura orientada a objetos con separación de responsabilidades
-- 🔍 Documentación automática de la API con Swagger UI
+- 🔄 Random generation of quotes and jokes
+- 🌐 REST API with FastAPI to serve content
+- 🎨 Minimalist user interface built with Flet
+- 🏗️ Object-oriented architecture with separation of concerns
+- 🔍 Automatic API documentation with Swagger UI
 
-## 🚀 Comenzando
+## 🚀 Getting Started
 
-### Requisitos previos
+### Prerequisites
 
 - Docker
+- Docker Compose (optional)
 
-### Instalación y Ejecución con Docker
+### Installation and Running with Docker
 
-1. Clona este repositorio:
+1. Clone this repository:
    ```bash
-   git clone https://github.com/tu-usuario/random_button.git
+   git clone https://github.com/your-username/random_button.git
    cd random_button
    ```
 
-2. Construye la imagen de Docker:
+2. Build the Docker image:
    ```bash
    docker buildx build -t random-button-app:latest .
    ```
 
-3. Ejecuta el contenedor:
+3. Run the container:
    ```bash
    docker run -p 8080:8080 -p 8000:8000 --rm --name random-button-app random-button-app:latest
    ```
 
-La aplicación estará disponible en:
+The application will be available at:
 - Frontend: `http://localhost:8080`
 - Backend API: `http://localhost:8000`
 
-## 🏗️ Estructura del proyecto
+## 🏗️ Project Structure
 
 ```
 random_button/
-├── backend/                # Servidor API REST
-│   ├── backend_app.py      # Punto de entrada del backend
-│   └── database_repository.py # Repositorio de base de datos SQLite
-├── frontend/              # Aplicación cliente
-│   └── frontend_app.py    # Aplicación Flet
-├── Dockerfile            # Configuración de Docker
-├── requirements.txt      # Dependencias del proyecto
-├── .env                 # Variables de entorno (no versionado)
-└── README.md            # Este archivo
+├── backend/                # REST API Server
+│   ├── backend_app.py      # Backend entry point
+│   └── database_repository.py # SQLite database repository
+├── frontend/              # Client Application
+│   └── frontend_app.py    # Flet Application
+├── Dockerfile            # Docker configuration
+├── requirements.txt      # Project dependencies
+├── .env                 # Environment variables (not versioned)
+└── README.md            # This file
 ```
 
-## 🖥️ Uso
+## 🖥️ Usage
 
-Una vez que el contenedor Docker esté en ejecución, puedes acceder a:
+Once the Docker container is running, you can access:
 
-- **Aplicación Frontend**: `http://localhost:8080`
-- **API Backend**: `http://localhost:8000`
-- **Documentación API**: `http://localhost:8000/docs`
+- **Frontend Application**: `http://localhost:8080`
+- **Backend API**: `http://localhost:8000`
+- **API Documentation**: `http://localhost:8000/docs`
 
 ## 📡 API Endpoints
 
-### Obtener contenido aleatorio
+### Get Random Content
 
 ```
 GET /random/{type}
 ```
 
-Donde `{type}` puede ser:
-- `joke`: Devuelve un chiste aleatorio
-- `quote`: Devuelve una frase inspiradora aleatoria
+Where `{type}` can be:
+- `joke`: Returns a random joke
+- `quote`: Returns a random inspirational quote
 
-**Ejemplo de respuesta**:
+**Example Response**:
 
 ```json
-{
 {
   "type": "joke",
   "content": "What is the computer's favorite snack to eat?... Microchips!"
 }
-}
 ```
 
-## 🧩 Arquitectura
+## 🧩 Architecture
 
-El proyecto sigue una arquitectura de microservicios con:
+The project follows a microservices architecture with:
 
 ### Backend
 
-- **FastAPI**: Framework moderno para APIs
-- **SQLite**: Base de datos ligera para almacenamiento
-- **Docker**: Containerización de la aplicación
-- **Patrón Repositorio**: Para acceso a datos
+- **FastAPI**: Modern API framework
+- **SQLite**: Lightweight database for storage
+- **Docker**: Application containerization
+- **Repository Pattern**: For data access
 
 ### Frontend
 
-- **Flet**: Framework para UI con Flutter/Python
-- **Tema oscuro**: Interfaz moderna
-- **Contenedores desplazables**: Para mostrar contenido
-- **Integración con Chuck Norris API**: Para obtener chistes adicionales
+- **Flet**: UI Framework with Flutter/Python
+- **Dark Theme**: Modern interface
+- **Scrollable Containers**: For content display
+- **Chuck Norris API Integration**: For additional jokes
 
+## 📦 Dependencies
 
-## 📦 Dependencias
+- **FastAPI**: Modern API framework
+- **SQLite**: Lightweight database for storage
+- **Docker**: Application containerization
+- **Flet**: UI Framework with Flutter/Python
+- **Chuck Norris API**: For additional jokes
 
-- **FastAPI**: Framework moderno para APIs
-- **SQLite**: Base de datos ligera para almacenamiento
-- **Docker**: Containerización de la aplicación
-- **Flet**: Framework para UI con Flutter/Python
-- **Chuck Norris API**: Para obtener chistes adicionales
+## 🐳 Docker Build Details
+
+The project uses a multi-stage Docker build to optimize the image size:
+
+### Stage 1: Builder
+- Uses `python:3.11-slim-buster` as base image
+- Installs build dependencies
+- Creates and configures a Python virtual environment
+- Installs all project dependencies in the virtual environment
+
+### Stage 2: Final Image
+- Uses `python:3.11-slim-buster` as base image
+- Copies only the virtual environment from the builder stage
+- Contains only runtime dependencies
+- Results in a significantly smaller image size
+
+This approach reduces the final image size by:
+- Excluding build tools and dependencies
+- Including only necessary runtime files
+- Using a virtual environment for Python packages
+- Removing temporary files and caches
+
+The final image is optimized for production use while maintaining all functionality.
 
