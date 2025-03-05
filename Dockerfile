@@ -17,7 +17,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    DB_PATH=/data/repository.db \ 
+    DB_PATH=/app/repository.db \ 
     HOST=0.0.0.0 \
     BACKEND_PORT=8000 \
     FRONTEND_PORT=8080 \
@@ -26,11 +26,6 @@ ENV PYTHONUNBUFFERED=1 \
     BACKEND_URL=http://localhost:8000 \
     CHUCK_NORRIS_API_URL=https://api.chucknorris.io/jokes/random
 
-# Create volume directory
-RUN mkdir -p /data
-
-# Define volume for database persistence
-VOLUME /data
 
 # Expose necessary ports
 EXPOSE 8000 8080
