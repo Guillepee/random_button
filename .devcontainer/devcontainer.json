@@ -1,0 +1,26 @@
+{
+    "name": "Proyecto Button",
+    "dockerFile": "../Dockerfile.dev",
+    "context": "..",
+    "runArgs": [
+        "--name", "button-dev-container"
+    ],
+    "forwardPorts": [8000, 8080],
+    "workspaceFolder": "/app",
+    "mounts": [
+        "source=${localWorkspaceFolder},target=/app,type=bind,consistency=cached"
+    ],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-azuretools.vscode-docker"
+            ],
+            "settings": {
+                "python.linting.enabled": true,
+                "python.formatting.provider": "black"
+            }
+        }
+    }
+} 

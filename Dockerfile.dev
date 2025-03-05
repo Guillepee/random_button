@@ -1,0 +1,43 @@
+FROM guillepee/mi-proyecto-base:latest
+
+WORKDIR /app
+
+# Configurar variables de entorno para desarrollo
+ENV DB_PATH=/app/repository.db \
+    HOST=0.0.0.0 \
+    BACKEND_PORT=8000 \
+    FRONTEND_PORT=8080 \
+    DEBUG=True \
+    ALLOWED_ORIGINS=http://localhost:8080,http://localhost:8550 \
+    BACKEND_URL=http://localhost:8000 \
+    CHUCK_NORRIS_API_URL=https://api.chucknorris.io/jokes/random
+
+# No copiamos el código, se montará como volumen en desarrollo
+
+# Instalar herramientas adicionales para desarrollo
+RUN pip install --no-cache-dir \
+    pytest \
+    pytest-cov \
+    black \
+    flake8 \
+    pylint \
+    watchdog
+
+# Instalar nodemon para auto-recarga (opcional)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && curl -fsSL https://deb.nodesource.com/setup_16.x | bash - \
+    && apt-get install -y nodejs \
+    && npm install -g nodemon \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Exponer puertos
+EXPOSE 8000 8080
+
+# Script para iniciar la aplicación con auto-recarga
+COPY .devcontainer/dev-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/dev-entrypoint.sh
+
+# Comando de inicio para desarrollo (con auto-recarga)
+CMD ["/usr/local/bin/dev-entrypoint.sh"] 

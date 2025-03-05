@@ -15,30 +15,45 @@ A simple application that generates random quotes and jokes with just a button p
 - 🏗️ Object-oriented architecture with separation of concerns
 - 🔍 Automatic API documentation with Swagger UI
 
+## 🐳 Docker Image Structure
+
+The project uses a system of three images:
+- **Base image**: Contains all common dependencies
+- **Development image**: For development environment with additional tools
+- **Production image**: Size-optimized for deployment
+
 ## 🚀 Getting Started
 
 ### Prerequisites
 
 - Docker
-- Docker Compose (optional)
+- VSCode (recommended, with Remote Containers extension)
+
+
+### Development Options
+
+#### Option 1: Using VSCode
+
+1. Open the project in VSCode
+2. When the "Reopen in Container" notification appears, click on it
+   (or press F1 and select "Remote-Containers: Reopen in Container")
+3. Done! VSCode will open the project inside the development container
+
+**Development environment features:**
+- Auto-reload when code changes
+- Development tools installed (pytest, black, flake8, pylint)
+- Integrated debugging with VSCode
+- DEBUG mode enabled for detailed messages
 
 ### Installation and Running with Docker
 
-1. Clone this repository:
+1. Build the Docker image:
    ```bash
-   git clone https://github.com/your-username/random_button.git
-   cd random_button
+   docker buildx build --platform linux/amd64 -t guillepee/button-project:latest -f Dockerfile.prod .
    ```
+2. Run the application
+docker run -d -p 8080:8080 -p 8000:8000 --name button-app guillepee/button-project:latest
 
-2. Build the Docker image:
-   ```bash
-   docker buildx build -t random-button-app:latest .
-   ```
-
-3. Run the container:
-   ```bash
-   docker run -p 8080:8080 -p 8000:8000 --rm --name random-button-app random-button-app:latest
-   ```
 
 The application will be available at:
 - Frontend: `http://localhost:8080`
@@ -53,10 +68,13 @@ random_button/
 │   └── database_repository.py # SQLite database repository
 ├── frontend/              # Client Application
 │   └── frontend_app.py    # Flet Application
-├── Dockerfile            # Docker configuration
-├── requirements.txt      # Project dependencies
-├── .env                 # Environment variables (not versioned)
-└── README.md            # This file
+├── Dockerfile.base        # Base image configuration
+├── Dockerfile.dev         # Development container configuration
+├── Dockerfile.prod        # Production container configuration
+├── .devcontainer/         # VSCode container configuration
+├── requirements.txt       # Project dependencies
+├── .env                   # Environment variables (not versioned)
+└── README.md              # This file
 ```
 
 ## 🖥️ Usage
@@ -106,6 +124,16 @@ The project follows a microservices architecture with:
 - **Scrollable Containers**: For content display
 - **Chuck Norris API Integration**: For additional jokes
 
+## 🐳 Docker Configuration Files
+
+The project includes several Docker-related files:
+
+- `Dockerfile.base`: Base image with all common dependencies
+- `Dockerfile.dev`: Development environment with additional tools and auto-reload
+- `Dockerfile.prod`: Optimized image for production
+- `.devcontainer/devcontainer.json`: Container configuration for VSCode
+- `.devcontainer/dev-entrypoint.sh`: Script to start the application in development mode
+
 ## 📦 Dependencies
 
 - **FastAPI**: Modern API framework
@@ -113,28 +141,4 @@ The project follows a microservices architecture with:
 - **Docker**: Application containerization
 - **Flet**: UI Framework with Flutter/Python
 - **Chuck Norris API**: For additional jokes
-
-## 🐳 Docker Build Details
-
-The project uses a multi-stage Docker build to optimize the image size:
-
-### Stage 1: Builder
-- Uses `python:3.11-slim-buster` as base image
-- Installs build dependencies
-- Creates and configures a Python virtual environment
-- Installs all project dependencies in the virtual environment
-
-### Stage 2: Final Image
-- Uses `python:3.11-slim-buster` as base image
-- Copies only the virtual environment from the builder stage
-- Contains only runtime dependencies
-- Results in a significantly smaller image size
-
-This approach reduces the final image size by:
-- Excluding build tools and dependencies
-- Including only necessary runtime files
-- Using a virtual environment for Python packages
-- Removing temporary files and caches
-
-The final image is optimized for production use while maintaining all functionality.
 
