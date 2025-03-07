@@ -1,4 +1,4 @@
-FROM guillepee/mi-proyecto-base:latest
+FROM guillepee/random-button:latest
 
 WORKDIR /app
 
